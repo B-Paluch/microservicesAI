@@ -1,0 +1,119 @@
+version: "3"
+services:
+  blog:
+    build: "djangoProject/."
+#    working_dir: blog_app
+    ports:
+    - "8001:8001"
+    restart: always
+    container_name: blog
+    image: bfinger1997/blog
+    command: bash -c "sleep 5; python manage.py runserver 0.0.0.0:8001"
+#    volumes:
+#      - /blog_app:/blog_app
+    depends_on:
+      - postgres
+      - kafka
+      - zookeeper
+      - migrate
+    env_file:
+      - blog_app/blog.env
+
+  uploader:
+    build: fileuploader/.
+    restart: always
+    container_name: uploader
+    ports:
+      - "8999:8999"
+    image: bfinger1997/uploader
+#    working_dir: ./fileuploader
+    depends_on:
+      - postgres
+      - kafka
+      - zookeeper
+    env_file:
+      - fileuploader/uploader.env
+
+  ai:
+    build: ai/.
+    restart: always
+    container_name: ai
+    image: bfinger1997/ai
+#    working_dir: ai
+    depends_on:
+      - uploader
+      - blog
+      - kafka
+      - zookeeper
+    env_file:
+      - ai/ai.env
+#    volumes:
+#      - /ai:/ai
+
+  logs:
+    build: logs/.
+    restart: always
+    container_name: logs
+    image: bfinger1997/logs
+    ports:
+      - "8888:8888"
+#    working_dir: logs
+    environment:
+      - BROKER_IP=kafka
+      - BROKER_PORT=9092
+    depends_on:
+      - postgres
+      - kafka
+      - zookeeper
+    env_file:
+      - logs/logs.env
+
+  postgres:
+    build: postgres/.
+    restart: always
+    container_name: postgres
+    image: bfinger1997/postgres
+    environment:
+      - POSTGRES_PASSWORD=qwe123
+      - POSTGRES_DB=postgres
+#    volumes:
+#      - ./database:/var/lib/postgresql/data
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    ports:
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+
+  migrate:
+    build: "blog_app/."
+      #    working_dir: blog_app
+#    ports:
+#      - "8001:8001"
+    container_name: migrations
+    image: bfinger1997/blog
+    command: bash -c 'while !</dev/tcp/postgres/5432; do sleep 1; done; while !</dev/tcp/kafka/9092; do sleep 1; done; python manage.py migrate --noinput'
+    #    volumes:
+    #      - /blog_app:/blog_app
+    depends_on:
+      - postgres
+      - kafka
+      - zookeeper
+    env_file:
+      - blog_app/blog.env

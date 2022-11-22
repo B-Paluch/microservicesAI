@@ -1,0 +1,27 @@
+Wymagania:
+
+W przypadku linux, wszystkie biblioteki można zainstalować przy pomocy apt-get install lub przy użyciu innego managera.
+apt-get install default-jdk
+apt-get install default-jre
+apt-get install python #(zazwyczaj już jest w dystrybucji)
+apt-get install docker
+apt-get install docker-compose
+#dodaj odpowiednie repozytorium dla narzędzi
+apt-get install pycharm
+apt-get install intellij
+apt-get install python3-pip
+
+
+
+W przypadku windows:
+Docker
+WSL
+Pycharm
+Intellij
+pip
+
+Wykorzystywane biblioteki:
+Spring boot - zawartosć pliku pom.xml
+
+Python - zawartość pliku requirements.txt
+

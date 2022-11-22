@@ -1,0 +1,5 @@
+US Voting system
+Microservice: Candidates - state, candidates, holds data regarding the candidates that were approved, resigned etc. Party only system.
+Microservice: Personal system - person with rights to vote casts a vote, uses persons state, sees only their states candidates, could be a part of bigger Personal system(taxes, etc, just holds data to the person, extra secure).
+Microservice: Tax informations - could be outside API, we make a call with our userid and securities from personal system.
+Microservice: Vote pool - overall analysis of votes per candidate, their party, who is winning etc.

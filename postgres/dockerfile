@@ -1,0 +1,6 @@
+FROM postgres
+LABEL Maintainer = Bartlomiej Paluch
+ENV POSTGRES_PASSWORD = qwe123
+ENV POSTGRES_DB = postgres
+COPY init.sql /docker-entrypoint-initdb.d/
+RUN echo listen_addresses = '*' >> postgres.conf

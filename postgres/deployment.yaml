@@ -1,0 +1,134 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: localstorage
+provisioner: docker.io/hostpath
+volumeBindingMode: Immediate
+reclaimPolicy: Delete
+allowVolumeExpansion: True
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: qwe123
+
+---
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: postgres-volume
+#  labels:
+#    type: local
+#spec:
+#  storageClassName: manual #local-storage
+##  storageClassName: default for AKS, here uncomment and set the AKS
+#  capacity:
+#    storage: 10Gi
+#  accessModes:
+#    - ReadWriteOnce
+#  hostPath:
+#    path: "/mnt/data"
+#  nodeAffinity:
+#    required:
+#      nodeSelectorTerms:
+#        - matchExpressions:
+#            - key: app
+#              operator: In
+#              values:
+#                - postgres
+#---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: postgres-volume-claim
+#spec:
+#  selector:
+#    matchLabels:
+#      release: "postgres"
+#  storageClassName: manual #local-storage
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 10Gi
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-persistent-volume-claim
+spec:
+  storageClassName: localstorage
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+
+# How do we want it implemented
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: local-storage
+spec:
+  storageClassName: localstorage
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: "/C/postgres"
+    type: DirectoryOrCreate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+#  serviceName: "postgres"
+  selector:
+    matchLabels:
+      app: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      volumes:
+        - name: postgres-volume-storage
+          persistentVolumeClaim:
+            claimName: database-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: bfinger1997/postgres
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-volume-storage
+              readOnly: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+  selector:
+    app: postgres

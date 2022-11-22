@@ -1,0 +1,12 @@
+FROM adoptopenjdk/openjdk11:alpine
+LABEL Maintainer = Bartlomiej Paluch
+ENV UPLOADER_PORT = 8999
+ENV UPLOADER_USERNAME = docker
+ENV UPLOADER_PASSWORD = qwe123
+ENV POSTGRES_IP = postgres
+ENV POSTGRES_PORT = 5432
+ENV UPLOADER_DB = uploader
+
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} uploader.jar
+ENTRYPOINT ["java","-jar","/uploader.jar"]

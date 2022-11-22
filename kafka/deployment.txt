@@ -1,0 +1,19 @@
+Na podstawie dokumentacji bitnami:
+https://docs.bitnami.com/tutorials/deploy-scalable-kafka-zookeeper-cluster-kubernetes/
+
+Aby wykonać deployment kafki:
+zainstaluj helm dla odpowiedniej dystrybucji, najprościej będzie przez chocolatey na windows.
+Następnie uruchom ponownie komputer.
+Dodaj repozytorium Bitnami
+helm repo add bitnami https://charts.bitnami.com/bitnami
+Jeżeli ktoś już korzystał z helm
+helm repo update
+A następnie dodaj zookeepera:
+helm install zookeeper bitnami/zookeeper --set replicaCount=2 --set auth.enabled=false --set allowAnonymousLogin=true
+Oraz kafkę:
+helm install kafka bitnami/kafka --set zookeeper.enabled=false --set replicaCount=2 --set externalZookeeper.servers=zookeeper
+
+Aby zwiększyć liczbę replik:
+helm upgrade kafka bitnami/kafka --set zookeeper.enabled=false --set replicaCount=3 --set externalZookeeper.servers=zookeeper
+
+helm upgrade zookeeper bitnami/zookeeper --set replicaCount=3 --set auth.enabled=false --set allowAnonymousLogin=true

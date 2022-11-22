@@ -1,0 +1,14 @@
+FROM python:latest
+RUN mkdir /code
+WORKDIR /code
+ADD . /code/
+RUN pip install -r requirements.txt
+LABEL Maintainer = Bartlomiej Paluch
+ENV SOURCE = http://uploader:8999
+ENV PG_USER = postgres
+ENV PG_PASS = qwe123
+ENV PG_HOST = localhost
+ENV PG_PORT = 5432
+ENV PG_DBNAME = blog
+
+RUN pip install -r requirements.txt
