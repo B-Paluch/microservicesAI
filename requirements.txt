@@ -25,3 +25,4 @@ Spring boot - zawartosć pliku pom.xml
 
 Python - zawartość pliku requirements.txt
 
+Uruchomienie bloga/migracji wymaga kafki!

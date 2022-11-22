@@ -7,17 +7,17 @@ services:
     - "8001:8001"
     restart: always
     container_name: blog
-    image: bfinger1997/blog
+#    image: bfinger1997/blog
     command: bash -c "sleep 5; python manage.py runserver 0.0.0.0:8001"
 #    volumes:
-#      - /blog_app:/blog_app
+#      - /djangoProject:/djangoProject
     depends_on:
       - postgres
       - kafka
       - zookeeper
       - migrate
     env_file:
-      - blog_app/blog.env
+      - djangoProject/blog.env
 
   uploader:
     build: fileuploader/.
@@ -25,20 +25,20 @@ services:
     container_name: uploader
     ports:
       - "8999:8999"
-    image: bfinger1997/uploader
+#    image: bfinger1997/uploader
 #    working_dir: ./fileuploader
     depends_on:
       - postgres
       - kafka
       - zookeeper
     env_file:
-      - fileuploader/uploader.env
+      - newproj/uploader.env
 
   ai:
     build: ai/.
     restart: always
     container_name: ai
-    image: bfinger1997/ai
+ #   image: bfinger1997/ai
 #    working_dir: ai
     depends_on:
       - uploader
@@ -50,34 +50,18 @@ services:
 #    volumes:
 #      - /ai:/ai
 
-  logs:
-    build: logs/.
-    restart: always
-    container_name: logs
-    image: bfinger1997/logs
-    ports:
-      - "8888:8888"
-#    working_dir: logs
-    environment:
-      - BROKER_IP=kafka
-      - BROKER_PORT=9092
-    depends_on:
-      - postgres
-      - kafka
-      - zookeeper
-    env_file:
-      - logs/logs.env
-
   postgres:
     build: postgres/.
     restart: always
     container_name: postgres
-    image: bfinger1997/postgres
+    ports:
+      - "5432:5432"
+   # image: bfinger1997/postgres
     environment:
       - POSTGRES_PASSWORD=qwe123
       - POSTGRES_DB=postgres
-#    volumes:
-#      - ./database:/var/lib/postgresql/data
+    volumes:
+      - ./database:/var/lib/postgresql/data
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'
@@ -102,18 +86,18 @@ services:
       - zookeeper
 
   migrate:
-    build: "blog_app/."
+    build: "djangoProject/."
       #    working_dir: blog_app
 #    ports:
 #      - "8001:8001"
     container_name: migrations
-    image: bfinger1997/blog
+ #   image: bfinger1997/blog
     command: bash -c 'while !</dev/tcp/postgres/5432; do sleep 1; done; while !</dev/tcp/kafka/9092; do sleep 1; done; python manage.py migrate --noinput'
     #    volumes:
-    #      - /blog_app:/blog_app
+    #      - /djangoProject:/djangoProject
     depends_on:
       - postgres
       - kafka
       - zookeeper
     env_file:
-      - blog_app/blog.env
+      - djangoProject/blog.env
