@@ -34,8 +34,8 @@ spring.main.banner-mode: off
 logging.level.org.springframework: ERROR
 
 spring.datasource.url: jdbc:postgresql://${POSTGRES_IP:localhost}:${POSTGRES_PORT:5432}/${UPLOADER_DB:uploader}
-spring.datasource.username: ${UPLOADER_USERNAME:psql}
-spring.datasource.password: ${UPLOADER_PASSWORD:postgres}
+spring.datasource.username: ${UPLOADER_USERNAME:postgres}
+spring.datasource.password: ${UPLOADER_PASSWORD:qwe123}
 
 spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: true
 spring.servlet.multipart.max-file-size: 2MB
