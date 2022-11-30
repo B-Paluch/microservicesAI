@@ -1,5 +1,6 @@
 import json
 import re
+import os
 
 import requests
 from kafka import KafkaConsumer, KafkaProducer

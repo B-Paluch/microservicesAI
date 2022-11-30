@@ -4,8 +4,6 @@
 import cv2
 from kafka import KafkaProducer
 
-producer = KafkaProducer(bootstrap_servers="localhost:9092") #os.environ['KAFKA_BOOTSTRAP']
-
 def highlightFace(net, frame, conf_threshold=0.7):
     frameOpencvDnn=frame.copy()
     frameHeight=frameOpencvDnn.shape[0]

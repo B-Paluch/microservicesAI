@@ -7,7 +7,7 @@ RUN apt-get update
 RUN apt-get install ffmpeg libsm6 libxext6  -y
 LABEL Maintainer = Bartlomiej Paluch
 ENV UPLOADER = http://uploader:8999
-ENV BLOG = http://blog:8001/api
+ENV BLOG = http://blog:8001
 ENV KAFKA_HOST = kafka:9092
 
 
