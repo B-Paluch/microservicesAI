@@ -5,9 +5,9 @@ import requests
 from kafka import KafkaConsumer, KafkaProducer
 from network.detect import doNetwork
 
-producer = KafkaProducer(bootstrap_servers="localhost:9092",
+producer = KafkaProducer(bootstrap_servers=os.getenv('KAFKA_HOST', "localhost:9092"),
                          value_serializer=lambda v: json.dumps(v).encode('utf-8'))  # os.environ['KAFKA_BOOTSTRAP']
-consumer = KafkaConsumer('fileCreated', group_id='ai', bootstrap_servers="localhost:9092",
+consumer = KafkaConsumer('fileCreated', group_id='ai', bootstrap_servers=os.getenv('KAFKA_HOST', "localhost:9092"),
                          auto_offset_reset='earliest')
 
 
@@ -24,7 +24,7 @@ print('server is running script.')
 
 for msg in consumer:
     try:
-        r = requests.get("http://localhost:8999" + "/files/" + msg.value.decode("utf-8"))
+        r = requests.get(os.getenv('UPLOADER', "http://localhost:8999") + "/files/" + msg.value.decode("utf-8"))
         filename = getFilename_fromCd(r.headers.get('content-disposition')).strip('"')
         print(filename)
         if filename.endswith(('.jpg', '.jpeg')):
@@ -34,7 +34,7 @@ for msg in consumer:
             doNetwork(filename)
             image = open("result"+filename,'rb')
             payload = {'name': filename}
-            i = requests.post("http://localhost:8001/api/images/", data=payload, files={'photo':image})
+            i = requests.post(os.getenv('BLOG', "http://localhost:8001")+"/api/images/", data=payload, files={'photo':image})
             print(payload)
             print(i.content)
             image.close()

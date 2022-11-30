@@ -1,17 +1,15 @@
-FROM python:3-slim
+FROM python:3.9
 RUN mkdir /code
 WORKDIR /code
 ADD . /code/
 RUN pip install -r requirements.txt
+RUN apt-get update
+RUN apt-get install ffmpeg libsm6 libxext6  -y
 LABEL Maintainer = Bartlomiej Paluch
-ENV SOURCE = http://uploader:8999
+ENV UPLOADER = http://uploader:8999
+ENV BLOG = http://blog:8001/api
 ENV KAFKA_HOST = kafka:9092
-ENV PG_USER = postgres
-ENV PG_PASS = qwe123
-ENV PG_HOST = localhost
-ENV PG_PORT = 5432
+
 
 RUN pip install -r requirements.txt
-CMD ["python", "manage.py", "makemigrations"]
-CMD ["python", "manage.py", "migrate"]
-CMD ["python", "manage.py", "runserver", "8999"]
+CMD ["python", "main.py"]

@@ -1,7 +1,8 @@
-FROM python:latest
+FROM python:3.9
 RUN mkdir /code
 WORKDIR /code
 ADD . /code/
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 LABEL Maintainer = Bartlomiej Paluch
 ENV SOURCE = http://uploader:8999
