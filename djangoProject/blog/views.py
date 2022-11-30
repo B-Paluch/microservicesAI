@@ -63,6 +63,7 @@ class ArticleViewSet(viewsets.ModelViewSet):
             response = {'message': 'Nieprawidłowe wykorzystanie, nie podano oceny artykułu.'}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
+@authentication_classes([SessionCsrfExemptAuthentication])
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = ProcessedPhoto.objects.all()
     serializer_class = PhotoSerializer

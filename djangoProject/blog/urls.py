@@ -12,7 +12,6 @@ router.register(r'article-ratings', views.ArticleRatingViewSet)
 router.register(r'images', views.ImageViewSet)
 
 urlpatterns = [
-    path('articles/ok/<uuid:id>', views.censor_article),
     url(r'^', include(router.urls)),
 
 ]
